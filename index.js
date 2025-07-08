@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 
 // import routers
 import { connectDB } from "./src/config/db.js";
+import apartmentRoutes from "./src/api/routes/apartment.routes.js";
 
 // starting
 const app = express();
@@ -20,6 +21,8 @@ app.use(cookieParser());
 connectDB();
 
 // api routes
+
+app.use("/api", apartmentRoutes);
 
 // root route
 
