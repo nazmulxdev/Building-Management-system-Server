@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 // import routers
 import { connectDB } from "./src/config/db.js";
 import apartmentRoutes from "./src/api/routes/apartment.routes.js";
+import jwtTokenRoutes from "./src/api/routes/jwt.routes.js";
 
 import uploadImageRoute from "./src/api/routes/upload.routes.js";
 
@@ -15,7 +16,12 @@ const app = express();
 const port = process.env.port || 3000;
 
 // project middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,6 +35,9 @@ app.use("/api", apartmentRoutes);
 
 // image upload route in the cloudinary
 app.use("/api", uploadImageRoute);
+
+// jwt token
+app.use("/api", jwtTokenRoutes);
 
 // root route
 
