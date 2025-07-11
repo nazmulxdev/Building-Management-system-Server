@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./src/config/db.js";
 import apartmentRoutes from "./src/api/routes/apartment.routes.js";
 
+import uploadImageRoute from "./src/api/routes/upload.routes.js";
+
 // starting
 const app = express();
 const port = process.env.port || 3000;
@@ -22,7 +24,11 @@ connectDB();
 
 // api routes
 
+// all apartments route
 app.use("/api", apartmentRoutes);
+
+// image upload route in the cloudinary
+app.use("/api", uploadImageRoute);
 
 // root route
 
