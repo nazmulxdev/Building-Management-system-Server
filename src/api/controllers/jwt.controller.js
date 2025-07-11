@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
 import "dotenv/config";
 const tokenController = async (req, res) => {
   const { email } = req.body;
@@ -10,8 +9,17 @@ const tokenController = async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: false,
+    sameSite: "lax",
   });
   res.send({ success: true });
 };
 
-export { tokenController };
+const unMountToken = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+  });
+  res.status(200).send({ message: "logged out , cookie cleared" });
+};
+
+export { tokenController, unMountToken };
