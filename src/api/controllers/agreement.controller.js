@@ -65,4 +65,18 @@ const createAgreement = async (req, res) => {
   }
 };
 
-export { createAgreement };
+const getAllPendingAgreement = async (req, res) => {
+  try {
+    const result = await agreementsCollection
+      .find({ status: "pending" })
+      .sort({
+        agreementDate: -1,
+      })
+      .toArray();
+    res.send(result);
+  } catch (error) {
+    res.status(404).send({ message: "internal server error" });
+  }
+};
+
+export { createAgreement, getAllPendingAgreement };
