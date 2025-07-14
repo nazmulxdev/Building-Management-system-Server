@@ -12,7 +12,7 @@ import jwtTokenRoutes from "./src/api/routes/jwt.routes.js";
 import uploadImageRoute from "./src/api/routes/upload.routes.js";
 
 import userRoleRoutes from "./src/api/routes/userRole.routes.js";
-
+import agreementRoutes from "./src/api/routes/agreement.routes.js";
 // starting
 const app = express();
 const port = process.env.port || 3000;
@@ -43,6 +43,9 @@ app.use("/api", jwtTokenRoutes);
 
 // users role based apis
 app.use("/api", userRoleRoutes);
+
+// agreement post route
+app.use("/api",agreementRoutes);
 // root route
 
 app.get("/", (req, res) => {

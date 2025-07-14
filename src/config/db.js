@@ -13,6 +13,7 @@ const client = new MongoClient(process.env.MONGO_URI, {
 
 let apartmentsCollection;
 let usersCollection;
+let agreementsCollection;
 
 const connectDB = async () => {
   try {
@@ -26,9 +27,15 @@ const connectDB = async () => {
     const dataBase = client.db("My-House");
     apartmentsCollection = dataBase.collection("apartments");
     usersCollection = dataBase.collection("users");
+    agreementsCollection = dataBase.collection("agreements");
   } catch (error) {
     console.log("error from database connection", error);
   }
 };
 
-export { apartmentsCollection, connectDB, usersCollection };
+export {
+  apartmentsCollection,
+  connectDB,
+  usersCollection,
+  agreementsCollection,
+};
