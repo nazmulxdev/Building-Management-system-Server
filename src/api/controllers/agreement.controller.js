@@ -26,8 +26,16 @@ const createAgreement = async (req, res) => {
       usersCollection.findOne({ email: userEmail }),
       apartmentsCollection.findOne({ _id: new ObjectId(apartmentId) }),
     ]);
-    if (!user || !apartment) {
-      return res.status(404).send({ message: "user or apartment not found" });
+    if (!user) {
+      return res.status(404).send({ message: "user not found" });
+    }
+    if (!apartment) {
+      return res.status(404).send({ message: "apartment not found" });
+    }
+    if (apartment.status !== "available") {
+      return res
+        .status(404)
+        .send({ message: "apartment is not available for booking" });
     }
     // creating agreement document
     const agreementDoc = {
@@ -42,14 +50,19 @@ const createAgreement = async (req, res) => {
       agreementDate: new Date(),
     };
     const agreementResult = await agreementsCollection.insertOne(agreementDoc);
-    res.status(201).send(agreementResult);
+    const updateStatue = await apartmentsCollection.updateOne(
+      { _id: new ObjectId(apartmentId) },
+      {
+        $set: {
+          status: "pending",
+        },
+      },
+    );
+    res.status(201).send({ agreementResult, updateStatue });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Server Error" });
   }
 };
-
-
-
 
 export { createAgreement };
