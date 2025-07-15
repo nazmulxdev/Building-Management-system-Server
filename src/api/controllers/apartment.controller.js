@@ -20,7 +20,7 @@ const getAllApartments = async (req, res) => {
 
     // getting total number of apartment
     const totalApartments = await apartmentsCollection.countDocuments(query);
-    
+
     // calculation of total page
     const totalPages = Math.ceil(totalApartments / limit);
     const apartments = await apartmentsCollection

@@ -79,4 +79,62 @@ const getAllPendingAgreement = async (req, res) => {
   }
 };
 
-export { createAgreement, getAllPendingAgreement };
+const updateAgreement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { decision, email, apartmentId } = req.body;
+    console.log(id, decision, email, apartmentId);
+    // update agreement status
+    const result = await agreementsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          status: "checked",
+          checkedAt: new Date().toISOString(),
+          decision: decision,
+        },
+      },
+    );
+    // checking if result not updated
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Agreement not found" });
+    }
+
+    if (decision === "rejected") {
+      await apartmentsCollection.updateOne(
+        { _id: new ObjectId(apartmentId) },
+        {
+          $set: {
+            status: "available",
+          },
+        },
+      );
+    }
+    // checking agreement rejected or approved
+    if (decision === "approved") {
+      await usersCollection.updateOne(
+        { email: email },
+        {
+          $set: {
+            role: "member",
+          },
+        },
+      );
+      await apartmentsCollection.updateOne(
+        { _id: new ObjectId(apartmentId) },
+        {
+          $set: {
+            status: "available",
+          },
+        },
+      );
+    }
+    res.send({ success: true, message: `Agreement ${decision} successfully` });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { createAgreement, getAllPendingAgreement, updateAgreement };

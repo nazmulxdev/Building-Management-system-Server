@@ -4,6 +4,7 @@ import { verifyAdmin, verifyToken } from "../middlewares/auth.middleware.js";
 import {
   createAgreement,
   getAllPendingAgreement,
+  updateAgreement,
 } from "../controllers/agreement.controller.js";
 
 const router = Router();
@@ -14,6 +15,13 @@ router.get(
   verifyToken,
   verifyAdmin,
   getAllPendingAgreement,
+);
+
+router.patch(
+  `/agreement-update/:id`,
+  verifyToken,
+  verifyAdmin,
+  updateAgreement,
 );
 
 export default router;
