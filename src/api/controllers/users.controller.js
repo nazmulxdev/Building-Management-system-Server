@@ -61,8 +61,6 @@ const getMembers = async (req, res) => {
   }
 };
 
-
-
 const removeMemberStatus = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -70,46 +68,46 @@ const removeMemberStatus = async (req, res) => {
     const user = await usersCollection.findOne({
       _id: new ObjectId(userId),
       email: email,
-      role: "member"
+      role: "member",
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "Member not found or already a regular user"
+        message: "Member not found or already a regular user",
       });
     }
-    const agreement = await agreementsCollection.findOne({ 
+    const agreement = await agreementsCollection.findOne({
       userEmail: email,
-      status: { $in: ["checked"] }
+      status: { $in: ["checked"] },
     });
 
     if (!agreement) {
       return res.status(404).json({
         success: false,
-        message: "No active agreement found for this member"
+        message: "No active agreement found for this member",
       });
     }
 
     if (!agreement.apartmentId) {
       return res.status(400).json({
         success: false,
-        message: "Agreement is missing apartment reference"
+        message: "Agreement is missing apartment reference",
       });
     }
     const [updateRole, updateApartment, updateAgreement] = await Promise.all([
       usersCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { role: "user" } }
+        { $set: { role: "user" } },
       ),
       apartmentsCollection.updateOne(
         { _id: new ObjectId(agreement.apartmentId) },
-        { $set: { status: "available" } }
+        { $set: { status: "available" } },
       ),
       agreementsCollection.updateOne(
         { _id: agreement._id },
-        { $set: { status: "revoked", decision: "revoked" } }
-      )
+        { $set: { status: "revoked", decision: "revoked" } },
+      ),
     ]);
     if (updateRole.modifiedCount === 0) {
       throw new Error("Failed to update user role");
@@ -128,14 +126,13 @@ const removeMemberStatus = async (req, res) => {
       data: {
         userId,
         email,
-        apartmentId: agreement.apartmentId
-      }
+        apartmentId: agreement.apartmentId,
+      },
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || "Internal server error during member removal"
+      message: error.message || "Internal server error during member removal",
     });
   }
 };

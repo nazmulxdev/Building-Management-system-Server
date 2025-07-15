@@ -13,6 +13,7 @@ import uploadImageRoute from "./src/api/routes/upload.routes.js";
 
 import userRoleRoutes from "./src/api/routes/userRole.routes.js";
 import agreementRoutes from "./src/api/routes/agreement.routes.js";
+import announcementsRoutes from "./src/api/routes/announcements.routes.js";
 // starting
 const app = express();
 const port = process.env.port || 3000;
@@ -45,7 +46,10 @@ app.use("/api", jwtTokenRoutes);
 app.use("/api", userRoleRoutes);
 
 // agreement post route
-app.use("/api",agreementRoutes);
+app.use("/api", agreementRoutes);
+
+// announcement route
+app.use("/api", announcementsRoutes);
 // root route
 
 app.get("/", (req, res) => {
