@@ -1,8 +1,13 @@
 import { Router } from "express";
 
-import { verifyAdmin, verifyToken } from "../middlewares/auth.middleware.js";
+import {
+  verifyAdmin,
+  verifyMember,
+  verifyToken,
+} from "../middlewares/auth.middleware.js";
 import {
   createAgreement,
+  getAgreementByEmail,
   getAllPendingAgreement,
   updateAgreement,
 } from "../controllers/agreement.controller.js";
@@ -22,6 +27,13 @@ router.patch(
   verifyToken,
   verifyAdmin,
   updateAgreement,
+);
+
+router.get(
+  `/member-agreement/:email`,
+  verifyToken,
+  verifyMember,
+  getAgreementByEmail,
 );
 
 export default router;

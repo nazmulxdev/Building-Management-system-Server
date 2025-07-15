@@ -126,7 +126,7 @@ const updateAgreement = async (req, res) => {
         { _id: new ObjectId(apartmentId) },
         {
           $set: {
-            status: "available",
+            status: "booked",
           },
         },
       );
@@ -137,4 +137,42 @@ const updateAgreement = async (req, res) => {
   }
 };
 
-export { createAgreement, getAllPendingAgreement, updateAgreement };
+const getAgreementByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const result = await agreementsCollection.findOne({ userEmail: email });
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "No agreement found for this email",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error fetching agreement:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export {
+  createAgreement,
+  getAllPendingAgreement,
+  updateAgreement,
+  getAgreementByEmail,
+};
