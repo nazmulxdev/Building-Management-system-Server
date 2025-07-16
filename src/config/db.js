@@ -15,6 +15,7 @@ let apartmentsCollection;
 let usersCollection;
 let agreementsCollection;
 let announcementCollection;
+let couponsCollection;
 
 const connectDB = async () => {
   try {
@@ -30,6 +31,7 @@ const connectDB = async () => {
     usersCollection = dataBase.collection("users");
     agreementsCollection = dataBase.collection("agreements");
     announcementCollection = dataBase.collection("announcements");
+    couponsCollection = dataBase.collection("coupons");
   } catch (error) {
     console.log("error from database connection", error);
   }
@@ -41,4 +43,5 @@ export {
   usersCollection,
   agreementsCollection,
   announcementCollection,
+  couponsCollection,
 };
