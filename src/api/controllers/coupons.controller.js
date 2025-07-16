@@ -172,6 +172,36 @@ const deleteCoupon = async (req, res) => {
   }
 };
 
+const getValidCoupons = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const validCoupons = await couponsCollection
+      .find({
+        status: "active",
+        expiry: {
+          $gt: currentDate,
+        },
+      })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+    res.status(200).json({
+      success: true,
+      data: validCoupons,
+      message:
+        validCoupons.length > 0
+          ? "Valid coupons retrieved successfully"
+          : "No active coupons available",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch valid coupons",
+    });
+  }
+};
+
 export {
   postCoupon,
   getAllCoupons,
