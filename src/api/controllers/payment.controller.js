@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { paymentsCollection } from "../../config/db.js";
 
 const uploadPendingPayment = async (req, res) => {
@@ -64,4 +65,44 @@ const uploadPendingPayment = async (req, res) => {
   }
 };
 
-export { uploadPendingPayment };
+const getPendingPaymentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment Id is required",
+      });
+    }
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment ID format",
+      });
+    }
+
+    const result = await paymentsCollection.findOne({
+      _id: new ObjectId(id),
+      status: "pending",
+    });
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Pending payment not found",
+      });
+    }
+    console.log(id);
+    res.status(200).json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Failed to load apartments details" });
+  }
+};
+
+export { uploadPendingPayment, getPendingPaymentById };

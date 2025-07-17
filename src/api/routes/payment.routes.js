@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { verifyToken, verifyMember } from "../middlewares/auth.middleware.js";
-import { uploadPendingPayment } from "../controllers/payment.controller.js";
+import {
+  getPendingPaymentById,
+  uploadPendingPayment,
+} from "../controllers/payment.controller.js";
 
 const router = Router();
 
@@ -9,6 +12,13 @@ router.post(
   verifyToken,
   verifyMember,
   uploadPendingPayment,
+);
+
+router.get(
+  "/pending-payment/:id",
+  verifyToken,
+  verifyMember,
+  getPendingPaymentById,
 );
 
 export default router;
