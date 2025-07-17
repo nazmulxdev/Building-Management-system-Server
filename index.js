@@ -16,6 +16,9 @@ import agreementRoutes from "./src/api/routes/agreement.routes.js";
 import announcementsRoutes from "./src/api/routes/announcements.routes.js";
 
 import couponsRoutes from "./src/api/routes/coupons.routes.js";
+
+import paymentRoutes from "./src/api/routes/payment.routes.js";
+
 // starting
 const app = express();
 const port = process.env.port || 3000;
@@ -55,6 +58,9 @@ app.use("/api", announcementsRoutes);
 
 // coupons route
 app.use("/api", couponsRoutes);
+
+// payment route
+app.use("/api", paymentRoutes);
 // root route
 
 app.get("/", (req, res) => {

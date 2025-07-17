@@ -202,10 +202,47 @@ const getValidCoupons = async (req, res) => {
   }
 };
 
+const validateCoupon = async (req, res) => {
+  try {
+    const { code } = req.body;
+    const currentDate = new Date();
+    if (!code) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Coupon is required" });
+    }
+    const coupon = await couponsCollection.findOne({
+      code: code,
+      status: "active",
+      expiry: {
+        $gt: currentDate,
+      },
+    });
+    if (!coupon) {
+      return res.status(204).json({
+        success: false,
+        message: "Invalid or expired coupon code",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Coupon is valid",
+      data: coupon,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to validate coupon",
+    });
+  }
+};
+
 export {
   postCoupon,
   getAllCoupons,
   updateCouponStatus,
   deleteCoupon,
   getValidCoupons,
+  validateCoupon,
 };
