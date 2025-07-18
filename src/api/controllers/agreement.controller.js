@@ -24,8 +24,9 @@ const createAgreement = async (req, res) => {
     if (existingAgreement) {
       const status = existingAgreement.status;
       const decision = existingAgreement.decision;
+      console.log(!decision);
 
-      if (status === "pending" && !decision) {
+      if (status === "pending" && decision == null) {
         return res
           .status(400)
           .send({ message: "You already have an pending agreement" });
