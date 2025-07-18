@@ -2,6 +2,7 @@ import { Router } from "express";
 import { verifyToken, verifyMember } from "../middlewares/auth.middleware.js";
 import {
   getPendingPaymentById,
+  paymentHistoryById,
   paymentIntent,
   updatePaymentById,
   uploadPendingPayment,
@@ -30,6 +31,13 @@ router.post(
   verifyToken,
   verifyMember,
   updatePaymentById,
+);
+
+router.get(
+  "/payments-history/:id",
+  verifyToken,
+  verifyMember,
+  paymentHistoryById,
 );
 
 export default router;

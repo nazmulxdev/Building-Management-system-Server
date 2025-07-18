@@ -193,9 +193,46 @@ const updatePaymentById = async (req, res) => {
   }
 };
 
+const paymentHistoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Member Id is required",
+      });
+    }
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Member ID format",
+      });
+    }
+    const result = await paymentsCollection
+      .find({
+        userId: id,
+        status: "paid",
+      })
+      .toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Data Fetched Successfully",
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 export {
   uploadPendingPayment,
   getPendingPaymentById,
   paymentIntent,
   updatePaymentById,
+  paymentHistoryById,
 };
