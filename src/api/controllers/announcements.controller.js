@@ -21,7 +21,6 @@ const postAnnouncement = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: error.message || "Failed to create announcement",

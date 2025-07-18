@@ -2,24 +2,6 @@ import { apartmentsCollection, usersCollection } from "../../config/db.js";
 
 const adminOverview = async (req, res) => {
   try {
-    // const usersPipeLine = [
-    //   {
-    //     $group: {
-    //       _id: "$role",
-    //       count: {
-    //         $sum: 1,
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       role: "$_id",
-    //       count: 1,
-    //       _id: 0,
-    //     },
-    //   },
-    // ];
-
     const usersPipeLine = [
       {
         $group: {
@@ -30,7 +12,7 @@ const adminOverview = async (req, res) => {
       {
         $group: {
           _id: null,
-          totalUsers: { $sum: "$count" },
+          totalWebSiteUsers: { $sum: "$count" },
           roles: {
             $push: {
               k: "$_id",
@@ -47,14 +29,21 @@ const adminOverview = async (req, res) => {
       {
         $project: {
           _id: 0,
-          totalUsers: 1,
+          totalWebSiteUsers: 1,
           totalMember: { $ifNull: ["$roles.member", 0] },
           totalAdmin: { $ifNull: ["$roles.admin", 0] },
+          totalUser: { $ifNull: ["$roles.user", 0] },
+
           percentageOfUsers: {
             $round: [
               {
                 $multiply: [
-                  { $divide: [{ $ifNull: ["$roles.user", 0] }, "$totalUsers"] },
+                  {
+                    $divide: [
+                      { $ifNull: ["$roles.user", 0] },
+                      { $ifNull: ["$totalWebSiteUsers", 1] }, // 👈 safe fallback
+                    ],
+                  },
                   100,
                 ],
               },
@@ -66,7 +55,10 @@ const adminOverview = async (req, res) => {
               {
                 $multiply: [
                   {
-                    $divide: [{ $ifNull: ["$roles.member", 0] }, "$totalUsers"],
+                    $divide: [
+                      { $ifNull: ["$roles.member", 0] },
+                      { $ifNull: ["$totalWebSiteUsers", 1] },
+                    ],
                   },
                   100,
                 ],
@@ -79,7 +71,10 @@ const adminOverview = async (req, res) => {
               {
                 $multiply: [
                   {
-                    $divide: [{ $ifNull: ["$roles.admin", 0] }, "$totalUsers"],
+                    $divide: [
+                      { $ifNull: ["$roles.admin", 0] },
+                      { $ifNull: ["$totalWebSiteUsers", 1] },
+                    ],
                   },
                   100,
                 ],
@@ -90,6 +85,7 @@ const adminOverview = async (req, res) => {
         },
       },
     ];
+
     const apartmentPipeline = [
       {
         $group: {
@@ -258,7 +254,10 @@ const adminOverview = async (req, res) => {
       apartmentsCount: apartmentsResult,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 

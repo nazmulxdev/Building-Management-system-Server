@@ -24,8 +24,6 @@ const createAgreement = async (req, res) => {
     if (existingAgreement) {
       const status = existingAgreement.status;
       const decision = existingAgreement.decision;
-      console.log(!decision);
-
       if (status === "pending" && decision == null) {
         return res
           .status(400)
@@ -91,7 +89,6 @@ const createAgreement = async (req, res) => {
     );
     res.status(201).send({ agreementResult, updateStatue });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ message: "Server Error" });
   }
 };
@@ -106,7 +103,10 @@ const getAllPendingAgreement = async (req, res) => {
       .toArray();
     res.send(result);
   } catch (error) {
-    res.status(404).send({ message: "internal server error" });
+     res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -114,7 +114,6 @@ const updateAgreement = async (req, res) => {
   try {
     const { id } = req.params;
     const { decision, email, apartmentId } = req.body;
-    console.log(id, decision, email, apartmentId);
     // update agreement status
     const result = await agreementsCollection.updateOne(
       { _id: new ObjectId(id) },
@@ -164,7 +163,10 @@ const updateAgreement = async (req, res) => {
     }
     res.send({ success: true, message: `Agreement ${decision} successfully` });
   } catch (error) {
-    console.log(error);
+     res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -193,7 +195,6 @@ const getAgreementByEmail = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("Error fetching agreement:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

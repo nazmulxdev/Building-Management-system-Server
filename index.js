@@ -26,7 +26,11 @@ const port = process.env.port || 3000;
 // project middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "https://my-house-6de15.web.app",
+      "https://my-house-6de15.firebaseapp.com",
+      "http://localhost:5173",
+    ],
     credentials: true,
   }),
 );
@@ -71,8 +75,8 @@ app.get("/", (req, res) => {
   res.send("My server is running ");
 });
 
-app.listen(port, () => {
-  console.log("server is running on port", port);
-});
+// app.listen(port, () => {
+//   console.log(`Server is listening on port ${port}`);
+// });
 
 export default app;

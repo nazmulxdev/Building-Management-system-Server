@@ -30,7 +30,6 @@ const userDataPost = async (req, res) => {
     const result = await usersCollection.insertOne(user);
     res.send(result);
   } catch (error) {
-    console.log("error from post userdata", error);
     res.status(500).send({ message: "Internal server error" });
   }
 };
@@ -47,7 +46,6 @@ const getUserRole = async (req, res) => {
     }
     res.send(user);
   } catch (error) {
-    console.log("Error from getting userdata", error);
     res.status(500).send({ message: "Internal server Error" });
   }
 };
@@ -57,7 +55,10 @@ const getMembers = async (req, res) => {
     const members = await usersCollection.find({ role: "member" }).toArray();
     res.send(members);
   } catch (error) {
-    console.log(error);
+     res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 

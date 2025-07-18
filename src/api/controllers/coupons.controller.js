@@ -194,7 +194,6 @@ const getValidCoupons = async (req, res) => {
           : "No active coupons available",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch valid coupons",
@@ -230,7 +229,6 @@ const validateCoupon = async (req, res) => {
       data: coupon,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: error.message || "Failed to validate coupon",

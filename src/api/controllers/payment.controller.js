@@ -7,8 +7,6 @@ const uploadPendingPayment = async (req, res) => {
     const pendingData = req.body;
     const month = pendingData.month;
     const year = pendingData.year;
-    console.log(pendingData);
-    console.log(month);
     if (!month) {
       return res.status(400).json({
         success: false,
@@ -51,7 +49,6 @@ const uploadPendingPayment = async (req, res) => {
       createdAt: new Date(),
       ...pendingData,
     };
-    console.log(paymentDoc);
     const result = await paymentsCollection.insertOne(paymentDoc);
     const id = result.insertedId;
     res.status(200).json({
@@ -61,7 +58,6 @@ const uploadPendingPayment = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ message: "Failed to load apartments details" });
   }
 };
@@ -100,7 +96,6 @@ const getPendingPaymentById = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ message: "Failed to load apartments details" });
   }
 };
@@ -123,7 +118,6 @@ const paymentIntent = async (req, res) => {
       clientSecret: paymentStripeIntent.client_secret,
     });
   } catch (error) {
-    console.log(error);
     res
       .status(500)
       .send({ status: false, message: "Stripe payment creation failed" });
@@ -185,7 +179,6 @@ const updatePaymentById = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -221,7 +214,6 @@ const paymentHistoryById = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

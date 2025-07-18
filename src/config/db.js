@@ -20,13 +20,6 @@ let paymentsCollection;
 
 const connectDB = async () => {
   try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
-    );
-
-    // declare of database and connect collection to the data base
     const dataBase = client.db("My-House");
     apartmentsCollection = dataBase.collection("apartments");
     usersCollection = dataBase.collection("users");
@@ -35,7 +28,10 @@ const connectDB = async () => {
     couponsCollection = dataBase.collection("coupons");
     paymentsCollection = dataBase.collection("payments");
   } catch (error) {
-    console.log("error from database connection", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
