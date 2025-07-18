@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { paymentsCollection } from "../../config/db.js";
+import { stripe } from "../../config/stripe.js";
 
 const uploadPendingPayment = async (req, res) => {
   try {
@@ -94,7 +95,6 @@ const getPendingPaymentById = async (req, res) => {
         message: "Pending payment not found",
       });
     }
-    console.log(id);
     res.status(200).json({
       success: true,
       result,
@@ -105,4 +105,97 @@ const getPendingPaymentById = async (req, res) => {
   }
 };
 
-export { uploadPendingPayment, getPendingPaymentById };
+const paymentIntent = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Amount is required" });
+    }
+    const paymentStripeIntent = await stripe.paymentIntents.create({
+      amount: amount * 100,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+    res.status(200).send({
+      success: true,
+      clientSecret: paymentStripeIntent.client_secret,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ status: false, message: "Stripe payment creation failed" });
+  }
+};
+
+const updatePaymentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { transactionId, paymentDate } = req.body;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment Id is required",
+      });
+    }
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format",
+      });
+    }
+
+    if (!transactionId) {
+      return res.status(400).json({
+        success: false,
+        message: "Transaction ID and status are required",
+      });
+    }
+
+    const pendingPayment = await paymentsCollection.findOne({
+      _id: new ObjectId(id),
+      status: "pending",
+    });
+
+    if (!pendingPayment) {
+      return res.status(404).json({
+        success: false,
+        message: "Pending payment not found",
+      });
+    }
+
+    const updateData = {
+      $set: {
+        status: "paid",
+        transactionId: transactionId,
+        paymentDate: paymentDate || new Date(),
+      },
+    };
+
+    const result = await paymentsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      updateData,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Payment for the apartment No. ${pendingPayment.apartmentNo} has been successful`,
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export {
+  uploadPendingPayment,
+  getPendingPaymentById,
+  paymentIntent,
+  updatePaymentById,
+};

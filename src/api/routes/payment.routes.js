@@ -2,6 +2,8 @@ import { Router } from "express";
 import { verifyToken, verifyMember } from "../middlewares/auth.middleware.js";
 import {
   getPendingPaymentById,
+  paymentIntent,
+  updatePaymentById,
   uploadPendingPayment,
 } from "../controllers/payment.controller.js";
 
@@ -19,6 +21,15 @@ router.get(
   verifyToken,
   verifyMember,
   getPendingPaymentById,
+);
+
+router.post("/payment-intent", verifyToken, verifyMember, paymentIntent);
+
+router.post(
+  "/update-payment/:id",
+  verifyToken,
+  verifyMember,
+  updatePaymentById,
 );
 
 export default router;
