@@ -12,14 +12,44 @@ const createAgreement = async (req, res) => {
     if (!ObjectId.isValid(apartmentId)) {
       return res.status(400).json({ message: "Invalid apartment id." });
     }
-    // checking agreement for this email
     const existingAgreement = await agreementsCollection.findOne({
       userEmail: userEmail,
+      status: { $in: ["checked", "pending", "revoked"] },
+      $or: [
+        { decision: { $in: ["approved", "rejected", "revoked"] } },
+        { decision: { $exists: false } },
+      ],
     });
+
     if (existingAgreement) {
-      return res
-        .status(400)
-        .send({ message: "You already have an active agreement" });
+      const status = existingAgreement.status;
+      const decision = existingAgreement.decision;
+
+      if (status === "pending" && !decision) {
+        return res
+          .status(400)
+          .send({ message: "You already have an pending agreement" });
+      }
+
+      if (status === "checked" && decision === "approved") {
+        return res
+          .status(400)
+          .send({ message: "You already have an active agreement" });
+      }
+
+      if (status === "checked" && decision === "rejected") {
+        return res.status(400).send({
+          message:
+            "Your agreement has been already rejected. You can't able to make an agreement any more. If any question? please, contact to the Building Authority",
+        });
+      }
+
+      if (status === "revoked" && decision === "revoked") {
+        return res.status(400).send({
+          message:
+            "Sorry , You are black listed from this building. You can't able to make any agreement.Please, contact to the Building Authority.",
+        });
+      }
     }
     // get user and apartment data
     const [user, apartment] = await Promise.all([
